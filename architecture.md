@@ -1,3 +1,4 @@
+```text
 ┌─────────────────────────────┐
 │         Customer            │
 │  Browser / Mobile Device    │
@@ -53,7 +54,7 @@
               │ Product Images  │
               │ Uploads Folder  │
               └─────────────────┘
-
+```
                          ▲
                          │
               ┌─────────────────┐
