@@ -1,0 +1,64 @@
+┌─────────────────────────────┐
+│         Customer            │
+│  Browser / Mobile Device    │
+└──────────────┬──────────────┘
+               │ HTTPS
+               ▼
+┌─────────────────────────────┐
+│      Frontend Layer         │
+│                             │
+│ • HTML5                     │
+│ • CSS3                      │
+│ • JavaScript                │
+│ • Product Catalog           │
+│ • Search & Filters          │
+│ • Cart Management           │
+│ • Reviews Display           │
+│ • Related Products          │
+└──────────────┬──────────────┘
+               │ API Requests
+               ▼
+┌─────────────────────────────┐
+│     Node.js + Express       │
+│       Application API       │
+│                             │
+│ • Authentication            │
+│ • Product Management        │
+│ • Cart Processing           │
+│ • Order Management          │
+│ • Review Management         │
+│ • Related Product Logic     │
+│ • Inventory Management      │
+│ • Checkout Processing       │
+└───────┬─────────┬───────────┘
+        │         │
+        │         │
+        ▼         ▼
+┌─────────────┐ ┌─────────────────┐
+│ Razorpay    │ │   MySQL DB      │
+│ Payment API │ │                 │
+│             │ │ • Users         │
+│ • UPI       │ │ • Products      │
+│ • Cards     │ │ • Categories    │
+│ • Wallets   │ │ • Reviews       │
+│ • COD Flow  │ │ • Orders        │
+└─────────────┘ │ • Addresses     │
+                │ • Inventory     │
+                └────────┬────────┘
+                         │
+                         ▼
+              ┌─────────────────┐
+              │  Files Storage  │
+              │                 │
+              │ Product Images  │
+              │ Uploads Folder  │
+              └─────────────────┘
+
+                         ▲
+                         │
+              ┌─────────────────┐
+              │ Render Hosting  │
+              │                 │
+              │ Node.js Server  │
+              │ Production App  │
+              └─────────────────┘
