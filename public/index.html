@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- index.html - Main HTML file for Lamio e-commerce app -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lamio | Gifts &amp; Crafts</title>
+    <meta name="description"
+        content="Lamio – Gifts & Crafts. Premium gift collections crafted with timeless beauty and crafting materials that are of top quality. Shop online with secure UPI and card payments.">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="./web-logo.png">
+</head>
+
+<body>
+    <div id="loader">
+        <div class="loader-content">
+            <img src="./web-logo.png" alt="Lamio">
+            <p>Loading...</p>
+        </div>
+    </div>
+    <nav>
+        <div class="logo" style="display:flex;align-items:center;">
+            <img src="./logo.png" alt="Lamio Logo" style="height:100px;width:auto;object-fit:contain;">
+        </div>
+        <ul id="navLinks">
+            <li><a href="#" onclick="showHome()">Home</a></li>
+            <li><a href="#collection" onclick="showHome()">Collection</a></li>
+            <li id="navCartItem"><a href="#" onclick="openCartModal(); return false;">Cart (<span id="cartCount">0</span>)</a></li>
+            <li id="navOrdersItem" style="display:none;"><a href="#" onclick="openOrdersPage(); return false;">Orders</a></li>
+            <li id="navLogin"><a href="#" onclick="openWelcomeModal(); return false;" style="color:#D4AF37;">Login</a></li>
+            <li id="navAdminDashboard" style="display:none;"><a href="#" onclick="showAdminDashboard(); return false;">Products</a>
+                <span style="opacity:0.5;margin:0 6px;">|</span>
+                <a href="#" onclick="logout(); return false;">Log out</a></li>
+            <li id="navAccount" style="display:none;"><a href="#" onclick="openUserDashboard(); return false;">My Account</a></li>
+        </ul>
+    </nav>
+    <section class="hero" id="heroSection">
+        <video autoplay loop muted playsinline preload="auto" class="hero-video">
+            <source src="/Gift-falling.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div style="position:relative;z-index:3;">
+            <div class="logo" style="display:flex;align-items:center;justify-content:center;">
+                <img src="./logo b.png" alt="Lamio Logo" style="height:300px;width:auto;object-fit:contain;">
+            </div>
+            <p style="margin-top:-100px;position:relative;">Crafting moments of pure Elegance</p>
+            <a href="#collection" onclick="showHome()">
+                <button>Explore Collection</button>
+            </a>
+        </div>
+    </section>
+    <section id="adminDashboard" class="admin dashboard-section">
+        <h2>Product Management</h2>
+        <div style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;">
+            <div style="flex:1;min-width:300px;max-width:500px;">
+                <h3 style="margin-bottom:20px;font-family:Cinzel;">Add / Edit Product</h3>
+                <div class="admin-edit-form">
+                    <input type="hidden" id="editProductId">
+                    <div class="admin-form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="editProductName" placeholder="e.g. Classic Sculptures" required
+                            onkeyup="if(event.key==='Enter') saveProduct()">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="editProductPrice" placeholder="e.g. 150" required
+                            onkeyup="if(event.key==='Enter') saveProduct()">
+                    </div> 
+                    <div class="admin-form-group">
+                        <label>Product Image</label>
+                        <input type="file" id="editProductImageFile" accept="image/*" style="padding:5px;" required>
+                        <small id="editProductImagePreview" style="display:block;margin-top:5px;color:#666;"></small>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Availability</label>
+                        <select id="editProductStatus">
+                            <option value="In Stock">In Stock</option>
+                            <option value="Out of Stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Category</label>
+                        <select id="editProductCategory">
+                            <option value="1">Gift</option>
+                            <option value="2">Beads Ornaments</option>
+                            <option value="3">Resin Arts</option>
+                            <option value="4">Stitching Materials</option>
+                        </select>
+                    </div>
+                    <div class="admin-form-group" style="display:flex;align-items:center;gap:10px;">
+                        <input type="checkbox" id="editProductCOD" style="width:auto;margin:0;">
+                        <label style="margin:0;">Cash on Delivery Available</label>
+                    </div>
+                    <button class="btn-primary" onclick="saveProduct()">Save Product</button>
+                    <button class="btn-primary" style="margin-top:10px;background:#666;"
+                        onclick="clearAdminForm()">Clear Form</button>
+                </div>
+            </div>
+            <div style="flex:2;min-width:300px;">
+                <h3 style="margin-bottom:20px;font-family:Cinzel;">Product List</h3>
+                <div id="adminProductList" style="text-align:left;"></div>
+            </div>
+        </div>
+    </section>
+    <section id="ordersPage" class="orders-page-section">
+        <h2>Order Management</h2>
+        <div class="order-history" style="margin-top:20px;overflow-x:auto;">
+            <table id="ordersPageTable">
+                <thead id="ordersPageTableHead">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th id="ordersPagePhoneHeader" style="display:none;">Phone</th>
+                        <th id="ordersPageAddressHeader" style="display:none;">Address</th>
+                        <th>Items</th>
+                        <th>Payment</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Delivery</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersPageTableBody"></tbody>
+            </table>
+        </div>
+    </section>
+    <section id="userDashboard" class="user dashboard-section">
+        <h2></h2>
+        <div class="udash-tabs">
+            <button class="udash-tab active" id="tab-profile" onclick="switchUDashTab('profile')">👤 Profile</button>
+            <button class="udash-tab" id="tab-orders" onclick="switchUDashTab('orders')">📦 My Orders</button>
+        </div>
+        <div id="udash-profile" class="udash-panel" style="max-width:500px;margin:30px auto;">
+            <div class="profile-card">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div class="profile-info">
+                    <h3 id="profileName">Your Name</h3>
+                    <p id="profileEmail" style="color:#666;font-size:14px;"></p>
+                    <p id="profilePhone" style="color:#666;font-size:14px;"></p>
+                </div>
+            </div>
+            <div style="text-align:center;margin-top:15px;">
+                <button class="btn-primary" onclick="openProfileEditModal()">Edit Profile</button>
+                <div class="admin-edit-form" style="margin-top:20px;">
+                    <div class="admin-form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profileEditName" placeholder="Your full name">
+                    </div>
+                    <div class="admin-form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="profileEditPhone" placeholder="+91 9999999999">
+
+                    </div>
+                    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                </div>
+                <div class="admin-edit-form" style="margin-top:40px;">
+                    <h3 style="margin-bottom:15px;font-family:Cinzel;">Delivery Address</h3>
+                    <div id="profileAddressList" style="margin-bottom:15px;"></div>
+                    <button class="btn-primary" onclick="openAddressModal()">Manage Addresses</button>
+                    </div>
+                </div>
+                <hr style="margin:40px 0; border:none; border-top:1px solid #eee;">
+                <button class="btn-primary" onclick="logout(); return false;">Log out</button>
+            </div>
+        </div>
+
+        <div id="udash-orders" class="udash-panel" style="display:none;">
+            <div class="order-history" style="margin-top:20px;overflow-x:auto;">
+                <table id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Payment</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Delivery</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <section id="collection" class="products">
+        <div style="max-width:800px;margin:0 auto 40px;text-align:center;">
+            <div style="position:relative;margin-bottom:25px;">
+                <input type="text" id="catalogSearch" placeholder="Search our collection..."
+                    oninput="handleFilterChange()"
+                    style="width:100%;padding:15px 25px;border-radius:50px;border:1px solid #ddd;font-family:Poppins;font-size:15px;background:rgba(255,255,255,0.8);backdrop-filter:blur(5px);box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                <span
+                    style="position:absolute;right:25px;top:50%;transform:translateY(-50%);font-size:18px;opacity:0.5;">🔍</span>
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-category="all" onclick="setCategoryFilter('all')">All</button>
+                <button class="filter-tab" data-category="1" onclick="setCategoryFilter('1')">Gifts</button>
+                <button class="filter-tab" data-category="2" onclick="setCategoryFilter('2')">Beads Ornaments</button>
+                <button class="filter-tab" data-category="3" onclick="setCategoryFilter('3')">Resin Arts</button>
+                <button class="filter-tab" data-category="4" onclick="setCategoryFilter('4')">Stitching Materials</button>
+            </div>
+        </div>
+        <div class="grid" id="productGrid"></div>
+    </section>
+
+    <section id="productPage" class="product-page-section" style="display:none;"> </section>
+    
+    <footer>
+        © 2026 Lamio – Gifts &amp; Beads Ornaments. All Rights Reserved.
+    </footer>
+
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content welcome-modal-content">
+            <span class="close-btn" onclick="closeAllModals()">&#x2715;</span>
+            <div class="welcome-logo">
+                <img src="./logo.png" alt="Lamio"
+                    style="height:80px;object-fit:contain;filter:brightness(0) invert(1);">
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')">Sign In</button>
+                <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            <div id="authSignInForm" class="auth-form">
+                <input type="email" id="siEmail" placeholder="Email Address" autocomplete="username"
+                    onkeyup="if(event.key==='Enter') handleUserAuth('signin')">
+                <div class="input-wrapper">
+                    <input type="password" id="siPassword" placeholder="Password" autocomplete="current-password"
+                        onkeyup="if(event.key==='Enter') handleUserAuth('signin')">
+                    <span class="fa fa-eye toggle-password" data-toggle="siPassword"></span>
+                </div>
+                <button class="btn-primary" onclick="handleUserAuth('signin')">Sign In</button>
+                <p class="auth-switch-text">Don't have an account? <a href="#"
+                        onclick="switchAuthTab('register')">Register here</a></p>
+            </div>
+            <div id="authRegisterForm" class="auth-form" style="display:none;">
+                <input type="text" id="regName" placeholder="Full Name"
+                    onkeyup="if(event.key==='Enter') handleUserAuth('register')">
+                <input type="email" id="regEmail" placeholder="Email Address"
+                    onkeyup="if(event.key==='Enter') handleUserAuth('register')">
+                <input type="tel" id="regPhone" placeholder="Phone Number (e.g. +91 99999 99999)"
+                    onkeyup="if(event.key==='Enter') handleUserAuth('register')">
+                <div class="input-wrapper">
+                    <input type="password" id="regPassword" placeholder="Create Password"
+                        onkeyup="if(event.key==='Enter') handleUserAuth('register')">
+                    <span class="fa fa-eye toggle-password" data-toggle="regPassword"></span>
+                </div>
+                <button class="btn-primary" onclick="handleUserAuth('register')">Create Account</button>
+                <p class="auth-switch-text">Already have an account? <a href="#" onclick="switchAuthTab('signin')">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartModal" class="modal">
+        <div class="modal-content" style="width:520px;max-width:95vw;">
+            <span class="close-btn" onclick="closeAllModals()">&#x2715;</span>
+            <h3 style="text-align:center;">Shopping Cart</h3>
+            <div id="cartItemsList"></div>
+            <div class="cart-total" id="cartTotalDisplay">Total: ₹0</div>
+            <button class="btn-primary checkout-btn" style="margin-top:20px;" onclick="startCheckout()">
+                🛒 Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content checkout-modal-content">
+            <span class="close-btn" onclick="closeAllModals()">&#x2715;</span>
+            <h3>Checkout</h3>
+            <div id="checkoutStep1">
+                <h3>📍 Select Delivery Address</h3>
+
+                <div id="savedAddresses"></div>
+
+                <button class="btn-primary" onclick="openAddressModal('add')">
+                    + Add New Address
+                </button>
+
+                <hr style="margin:20px 0;">
+
+                <div style="background:#f9f9f9;padding:12px;border-radius:8px;">
+                    🚚 Estimated Delivery: <strong id="deliveryEstimate"></strong>
+                </div>
+
+                <button class="btn-primary" onclick="goToPaymentStep()" style="margin-top:20px;">
+                    Continue →
+                </button>
+            </div>
+            <div id="checkoutStep2" style="display:none;">
+                <h3>💳 Payment</h3>
+
+                <div class="payment-options">
+                    <div class="pm-tile" data-payment-method="ONLINE" onclick="selectPayment('ONLINE')">
+                        💳 Pay Now (UPI / Card / Wallet)
+                    </div>
+                    <div class="pm-tile" data-payment-method="COD" onclick="selectPayment('COD')">
+                        💵 Cash on Delivery
+                    </div>
+                </div>
+
+                <div style="margin-top:20px;">
+                    <button onclick="goBackToAddress()">← Back</button>
+                    <button class="btn-primary" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="receiptModal" class="modal">
+        <div class="modal-content receipt-modal-content">
+            <span class="close-btn" onclick="closeAllModals()">&#x2715;</span>
+            <div id="receiptContent">
+                <div style="text-align:center;margin-bottom:25px;">
+                    <h2 style="font-family:Cinzel;margin-bottom:5px;color:#800000;">LAMIO</h2>
+                    <p style="font-size:14px;text-transform:uppercase;letter-spacing:2px;color:#999;">Order Invoice</p>
+                    <div class="receipt-success-tick">✅</div>
+                    <p style="color:#27ae60;font-weight:600;font-size:15px;">Order Placed Successfully!</p>
+                </div>
+                <div style="border-top:1px solid #eee;border-bottom:1px solid #eee;padding:15px 0;margin-bottom:20px;">
+                    <div class="receipt-row"><span>Order Number:</span><strong id="receiptOrderId"></strong></div>
+                    <div class="receipt-row"><span>Date:</span><span id="receiptDate"></span></div>
+                    <div class="receipt-row"><span>Payment Method:</span><span id="receiptPaymentMethod"></span></div>
+                </div>
+                <div id="receiptItems" style="margin-bottom:20px;"></div>
+                <div class="receipt-row"
+                    style="font-size:18px;border-top:2px solid #eee;padding-top:15px;margin-bottom:25px;">
+                    <strong style="font-family:Cinzel;">Total Paid:</strong>
+                    <strong id="receiptTotal" style="color:#800000;"></strong>
+                </div>
+                <div
+                    style="background:#fdf5f5;padding:15px;border-radius:8px;margin-bottom:25px;border-left:4px solid #800000;">
+                    <p style="font-size:13px;color:#666;margin:0;"><strong>Estimated Delivery:</strong> <span
+                            id="receiptDelivery"></span></p>
+                    <p style="font-size:13px;color:#666;margin:8px 0 0;"><strong>Delivering to:</strong> <span id="receiptAddress"></span></p>
+                </div>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-primary" style="background:#333;flex:1;" onclick="goToMyOrders()">📦 My Orders</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+    <div id="confirmModal" class="modal">
+        <div class="modal-content" style="width:320px;">
+            <h3 id="confirmTitle">Confirm Action</h3>
+            <p id="confirmMessage" style="margin-bottom:25px;color:#666;font-size:14px;">Are you sure you want to proceed?</p>
+            <div style="display:flex;gap:10px;">
+                <button class="btn-primary" id="confirmOkBtn" style="background:#c0392b;">Delete</button>
+                <button class="btn-primary" onclick="closeAllModals()" style="background:#666;">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="addressModal" class="modal">
+        <div class="modal-content" style="max-width:500px;">
+            <span class="close-btn" onclick="closeAllModals()">✕</span>
+
+            <button class="btn-primary" onclick="autoLocateAddress(event)"
+                style="background:#5c8a8a;margin-bottom:15px;display:flex;align-items:center;justify-content:center;gap:10px;">
+                📍 Auto-Locate via GPS
+            </button>
+
+            <div id="mapContainer"
+                style="width: 100%; height: 200px; margin-bottom: 15px; display: none; border-radius: 8px; overflow: hidden; border: 1px solid #ddd;">
+            </div>
+
+            <h3 id="addressModalTitle">Add Address</h3>
+
+            <input type="hidden" id="addrEditId">
+
+            <div class="admin-form-group" style="display:flex;gap:10px;">
+                <textarea id="addrLine" placeholder="Address" rows="3" cols="100"></textarea>
+            </div>
+            <div class="admin-form-group" style="display:flex;gap:10px;">
+                <input type="text" id="addrLandmark" placeholder="Landmark">
+            </div>
+            <div class="admin-form-group" style="display:flex;gap:10px;">
+                <input type="text" id="addrCity" placeholder="City">
+                <input type="text" id="addrPincode" placeholder="Pincode">
+            </div>
+
+            <button class="btn-primary" onclick="saveAddress()">
+                Save Address
+            </button>
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
